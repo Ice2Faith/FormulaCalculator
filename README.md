@@ -16,7 +16,40 @@ please check ./realse/*.png
 请选择:
 >/
 ```
-# using && help info
+# using
+## binary calcul
+```bash
+7 and 3 + 1 or 2 + 3 xor 0 + (0 not) and 3
+```
+## trigonometric function calcul
+```bash
+(60radian)sin + (30radian)cos + (30radian)tan + 3!+ 25per + 10neg + 180radian
+```
+## extend math operator double operate number
+```bash
+2 sqrt 4 + 2 log 8 + 1 adds 5 + 1 muls 3
+```
+## base math calcul
+```bash
+((3.14 * 2 - 6 / (2 % 10)) + (3 ^ 1)) / (4 / 2)
+```
+## brackets using calcul
+```bash
+((3 + 5 * (4 % (3 + 7)) / (2 ^ 2)) / 2 / 2) ^ 3
+```
+## link formula calcul
+```bash
+3 * 2 * 2 / 4 + 5 * (2 - 4) + 6 / 3 + 12 % 10 + 2 ^ 3
+```
+## extend math operator single operate number
+```bash
+1 recip + 1 epow + 1 nume ln + 2 numpi + 1 numgsec
+```
+## hex tranform calcul
+```bash
+16 dehex0c + 8 dehex14 - 2 dehex1100
+```
+# help info
 ```bash
 公式计算器使用简介：    Ugex.Savelar
         常规双目运算符号：+ - * / % ^ ( )
