@@ -3,14 +3,16 @@ a calculator of base on string formula by double stack,using c++ implements
 # introduce
 https://blog.csdn.net/Ugex_Savelar/article/details/107581618
 # running preview
-please check ./realse/*.png
+please check ./release/*.png to learn how to use it better
 # command display
 ```bash
 ----------------------------------
-         公式计算器 (Formula Calculator)
+        公式计算器 (Formula Calculator)
 ----------------------------------
         1.常规计算
         2.预处理计算
+        3.进制转换
+        4.查看帮助
         0.退出程序
 ----------------------------------
 请选择:
