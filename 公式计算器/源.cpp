@@ -4,6 +4,8 @@
 int Menu();
 void normalCal(FormulaCalculator & cal);
 void prepareCal(FormulaCalculator& cal);
+void hexTranform(FormulaCalculator & cal);
+void displayHelpInfo(FormulaCalculator & cal);
 int main(int argc, char * argv[])
 {
 	system("title 公式计算器 by Ugex.Savelar");
@@ -24,7 +26,7 @@ int main(int argc, char * argv[])
 	"; //=55.840994 success
 	*/
 	FormulaCalculator cal;
-	printf("%s\n", FormulaCalculator::getUseHelpStr());
+
 	while(1)
 	{
 		int sel = Menu();
@@ -39,6 +41,12 @@ int main(int argc, char * argv[])
 		case 2:
 			prepareCal(cal);
 			break;
+		case 3:
+			hexTranform(cal);
+			break;
+		case 4:
+			displayHelpInfo(cal);
+			break;
 		}
 	}
 
@@ -52,15 +60,66 @@ int Menu()
 	printf("----------------------------------\n");
 	printf("\t1.常规计算\n");
 	printf("\t2.预处理计算\n");
+	printf("\t3.进制转换\n");
+	printf("\t4.查看帮助\n");
 	printf("\t0.退出程序\n");
 	printf("----------------------------------\n");
 	printf("请选择:\n>/ ");
 	fflush(stdin);
 	char ch = 0;
-	while (ch<'0' || ch>'2')
+	while (ch<'0' || ch>'4')
 		ch = getch();
 	printf("%c\n",ch);
 	return ch - '0';
+	system("cls");
+}
+void displayHelpInfo(FormulaCalculator & cal)
+{
+	printf("%s\n", FormulaCalculator::getUseHelpStr());
+
+	system("pause");
+	system("cls");
+}
+void hexTranform(FormulaCalculator & cal)
+{
+	AlgoString<char, int> snum;
+	snum.prepareMemery(1024);
+	AlgoString<char, int> dnum;
+	dnum.prepareMemery(1024);
+	printf("tips:请确保您输入的数值，是2-16进制数，否则将不会有任何错误，并且结果为0.0(如：kll.35)\n\n");
+	while (1)
+	{
+		printf("请输入数值（2-16）进制(如：c23,036,1100等)：\n>/ ");
+		fflush(stdin);
+		snum.zeroMemory();
+		gets(snum.getData());
+		snum.trim();
+		if (snum.getLength() > 0)
+		{
+
+			fflush(stdin);
+			printf("请输入源进制和目标进制(如：10 16,16 10,16 2等)：");
+			int sbase = 10, dbase = 16;
+			scanf("%d", &sbase);
+			scanf("%d", &dbase);
+
+			double num = cal.hex2Number(snum.getData(), sbase);
+			cal.number2Hex(num, dnum.getData(), dbase, 8);
+
+			printf(">> %d: %s --> %d: %s\n", sbase, snum.getData(), dbase, dnum.getData());
+		}
+		else
+		{
+			printf("Err:无效的输入\n");
+		}
+
+		fflush(stdin);
+		printf("-----输入0退出，其他任意键继续---------\n");
+		char ch = getch();
+		if (ch == '0')
+			break;
+		system("cls");
+	}
 	system("cls");
 }
 void normalCal(FormulaCalculator & cal)

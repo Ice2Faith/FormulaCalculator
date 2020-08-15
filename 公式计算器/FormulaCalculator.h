@@ -74,7 +74,7 @@ date:2020-7-25
 class FormulaCalculator
 {
 public:
-	AlgoString<char, int> buildPrepareFormula(AlgoString<char, int>& preFormula, AlgoArray<AlgoString<char, int>, int> & flags, AlgoArray<AlgoString<char, int>, int> & values)
+	static AlgoString<char, int> buildPrepareFormula(AlgoString<char, int>& preFormula, AlgoArray<AlgoString<char, int>, int> & flags, AlgoArray<AlgoString<char, int>, int> & values)
 	{
 		AlgoString<char, int> ret(preFormula);
 		for (int i = 0; i < flags.size(); i++)
@@ -83,7 +83,53 @@ public:
 		}
 		return ret;
 	}
+	static double hex2Number(char * str, int base = 16)
+	{
+		int addCount = 0;
+		return getNumber(str, &addCount, base);
+	}
+	static char * number2Hex(double num,char * hex,int base=16,int decimal=4)
+	{
+		if (hex == NULL || base<2 || base>16 || decimal < 0)
+			return hex;
 
+		static char map[] = { "0123456789ABCDEF" };
+
+		char temp[128] = { 0 };
+		int otc = (int)num;
+		double flo = num - otc;
+		int retlen = 0;
+		int len = 0;
+		while (otc != 0)
+		{
+			int pnum=otc%base;
+			temp[len++] = map[pnum];
+			otc = (int)otc / base;
+		}
+		int tlen = len-1;
+		if (tlen <= 0)
+			hex[retlen++] = '0';
+		while (tlen >= 0)
+		{
+			hex[retlen++] = temp[tlen];
+			tlen--;
+		}
+		hex[retlen++] = '.';
+		int dotIndex = retlen;
+		int i = 0;
+		while (flo != 0.0&&i<decimal)
+		{
+			int pnum = (int)(flo*base);
+			hex[retlen++] = map[pnum];
+			flo = flo*base - pnum;
+			i++;
+		}
+		if (dotIndex == retlen)
+			hex[retlen++] = '0';
+		hex[retlen] = 0;
+
+		return hex;
+	}
 	/////////////////////////////////////////////
 public:
 	static const char * getUseHelpStr()
