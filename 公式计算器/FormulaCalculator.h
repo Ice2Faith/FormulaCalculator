@@ -2,67 +2,67 @@
 #define _FORMULA_CALCULATOR_HPP_
 /*
 --------------------------
-name:��ʽ������
+name:公式计算器
 author:Ugex.Savelar
 date:2020-7-25
 --------------------------
-����˫ջ������ջ������ջ��ʵ�ֵ��ַ�����ʽ������
-ԭ����
-ɨ���������빫ʽ����������ɨ��
-��������֣�ֱ����ջ������ջ
-����Ƿ���
-	�������ջΪ�գ������������ţ���������ջ������ջ
-	�������ջ��Ϊ��
-		�ͷ���ջջ�����ţ��Ƚ����ȼ�
-			�������ջ�����ȼ���ֱ����ջ������ջ
-			�������ջ�����ȼ���������ջȡ���������֣��ӷ���ջȡ��һ�����ţ��������㣬
-				����������������ջ������ǰ������ջ������ջ
-			�����ǰɨ�赽�ķ����������ţ�
-				����ȡ�������ֺ�һ�������㣬֪������ջջ������Ϊ�����ţ�
-				����ջ���������ţ�
-Ҳ����˵�����ֺ������ţ���������ջ�������ţ�ʼ�ղ���ջ��
-���������ţ����Ͳ��ϵ�ջ���㣬֪����ȥջ�е����ĵ�һ�������ţ���
-����ʱ�򣬵�ǰ�ķ������ȼ��ߣ�ֱ����ջ�����ȼ�����ջ���㣬����ջ
+基于双栈（数字栈，符号栈）实现的字符串公式计算器
+原理：
+扫描整个输入公式，从左向右扫描
+如果是数字，直接入栈到数字栈
+如果是符号
+	如果符号栈为空，或者是左括号，无条件入栈到符号栈
+	如果符号栈不为空
+		和符号栈栈顶符号，比较优先级
+			如果高于栈顶优先级，直接入栈到符号栈
+			如果低于栈顶优先级，从数字栈取出两个数字，从符号栈取出一个符号，进行运算，
+				将运算结果放入数字栈，将当前符号入栈到符号栈
+			如果当前扫描到的符号是右括号）
+				不断取出两数字和一符号运算，知道符号栈栈顶符号为左括号（
+				弹出栈顶的左括号（
+也就是说，数字和左括号（无条件入栈，右括号）始终不入栈，
+遇到右括号），就不断弹栈计算，知道消去栈中弹出的第一个左括号（，
+其他时候，当前的符号优先级高，直接入栈，优先级低则弹栈计算，再入栈
 
-α�������̣�
-	ֱ�� ���빫ʽɨ�����
-		��� ɨ�赽�ַ�
-			��ȡ����
-			��ջ-����ջ
-			�ƶ��±�
-		����
-			��ȡ��ǰ����
-			��� ��֧�ֵ�ǰ����
-				�˳�ѭ����ֱ�ӷ���
-			��� ����ջ��
-				��ջ��ǰ����
-			����
-				��ȡ����ջ������
-				���ջ�����ź͵�ǰ���ŵ����ȼ�
-				��� ���ȼ���ȡ�����ı�־
-					�˳�ѭ����ֱ�ӷ���
-				������� �������ŵ����ȼ���־
-					��ջ����ջ
-				������� ��ǰ�������ȼ� ���� ջ������
-					��ջ�������ֺ�һ�����Ž��м��㣬����������������ջ����ջ--�鿴ע��1
-					��� ��ǰ���� �� ������
-						������һ��ѭ������������ѭ��
-					��ջ ��ǰ���� �� ����ջ
-				������� ��ǰ�������ȼ� ���� ջ������
-					��ջ ��ǰ���� �� ����ջ
-			�ƶ��±�
-	ֱ�� ����ջ Ϊ��
-		��ջ�������ֺ�һ�����Ž��м��㣬����������������ջ����ջ--�鿴ע��1
+伪代码流程：
+	直到 输入公式扫描结束
+		如果 扫描到字符
+			获取数字
+			入栈-数字栈
+			移动下标
+		否则
+			获取当前符号
+			如果 不支持当前符号
+				退出循环、直接返回
+			如果 符号栈空
+				入栈当前符号
+			否则
+				获取符号栈顶符号
+				获得栈顶符号和当前符号的优先级
+				如果 优先级获取出错的标志
+					退出循环、直接返回
+				否则如果 消除括号的优先级标志
+					出栈符号栈
+				否则如果 当前符号优先级 低于 栈顶符号
+					出栈两个数字和一个符号进行计算，并将计算结果重新入栈数字栈--查看注解1
+					如果 当前符号 是 右括号
+						继续下一轮循环，跳过本轮循环
+					入栈 当前符号 到 符号栈
+				否则如果 当前符号优先级 高于 栈顶符号
+					入栈 当前符号 到 符号栈
+			移动下标
+	直到 符号栈 为空
+		出栈两个数字和一个符号进行计算，并将计算结果重新入栈数字栈--查看注解1
 					
-	���� ����ջջ������������յĽ��
+	返回 数字栈栈顶，这就是最终的结果
 
------ע��1��
-	��ջ����2 �� ����ջ
-	��ջ����1 �� ����ջ
-	��ջ������� �� ����ջ
-	���� ����1 ������� ����2 ���浽 ���
-	��ջ ��� �� ����ջ
-----ע�⣬����������������1������2�ģ���Ϊ������������Ҫ���ֵ�
+-----注解1：
+	出栈数字2 从 数字栈
+	出栈数字1 从 数字栈
+	出栈运算符号 从 符号栈
+	计算 数字1 运算符号 数字2 保存到 结果
+	入栈 结果 到 数字栈
+----注意，这里是区分了数字1和数字2的，因为除法减法是需要区分的
 */
 #include"AlgoContainer.hpp"
 #include"AlgoString.hpp"
@@ -134,40 +134,40 @@ public:
 public:
 	static const char * getUseHelpStr()
 	{
-		static char help[] = {"��ʽ������ʹ�ü�飺\tUgex.Savelar\n\
-\t����˫Ŀ������ţ�+ - * / % ^ ( )\n\
-\t\t�ӡ������ˡ�����ȡģ������\n\
-\t\t�÷���3+2*5-(2^3)%5\n\
-\t��չ˫Ŀ������ţ�sqrt log adds muls and or xor\n\
-\t\tN�θ����������ۼӡ��۳ˡ�λ�롢λ��λ���\n\
-\t\t�÷���2 sqrt 4 + 1adds5+ 7 and 3\n\
-\t\t˵����2sqrt4��ʾ4��2�θ���1adds5��ʾ1+...+5\n\
-\t\t\t2log8��ʾ����2Ϊ��8�Ķ���,7and3��ʾ7λ��3\n\
-\t��չ��Ŀ�������\n\
+		static char help[] = {"公式计算器使用简介：\tUgex.Savelar\n\
+\t常规双目运算符号：+ - * / % ^ ( )\n\
+\t\t加、减、乘、除、取模、求幂\n\
+\t\t用法：3+2*5-(2^3)%5\n\
+\t拓展双目运算符号：sqrt log adds muls and or xor\n\
+\t\tN次根、对数、累加、累乘、位与、位或、位异或\n\
+\t\t用法：2 sqrt 4 + 1adds5+ 7 and 3\n\
+\t\t说明：2sqrt4表示4开2次根，1adds5表示1+...+5\n\
+\t\t\t2log8表示求以2为底8的对数,7and3表示7位与3\n\
+\t拓展单目运算符：\n\
 \t\t! neg per abs radian angle sin cos tan arcsin arccos arctan recip epow ln numpi nume numgsec\n\
-\t\t�׳� ���� �ٷֺ� ����ֵ ת���� ת�Ƕ� ���Ǻ����� ���� e��x���� ��Ȼ���� n��Բ���� n����Ȼ���� n���ƽ�ָ���\n\
-\t\t�÷���3!+5neg+50per+(60radian)sin\n\
-\t\t˵����3!��ʾ��3�Ľ׳ˣ�5neg��ʾ��5,50per��ʾ�ٷ�֮50\n\
-\t\t\t60radian��ʾ��60ת��Ϊ�����ƣ�(60radian)sin��ʾ��sin60�Ƕ�\n\
-\t\t[ע��]:���Ǻ����������Ҫʹ�û����ƣ�ӵ�������ת��\n\
-\t�ڽ����ţ�\n\
+\t\t阶乘 负号 百分号 绝对值 转弧度 转角度 三角函数族 求倒数 e的x次幂 自然对数 n倍圆周率 n倍自然常数 n倍黄金分割率\n\
+\t\t用法：3!+5neg+50per+(60radian)sin\n\
+\t\t说明：3!表示求3的阶乘，5neg表示负5,50per表示百分之50\n\
+\t\t\t60radian表示将60转换为弧度制，(60radian)sin表示求sin60角度\n\
+\t\t[注意]:三角函数族计算需要使用弧度制，拥有运算符转换\n\
+\t内建符号：\n\
 \t\tdehex\n\
-\t\t����2-16���������÷���16 dehex0c\n\
-\t\t��ע�⡿��dehex��֮�󡿽����������������пո�ȷ��ţ��������\n\
-\t\t��ע�⡿��dehex��֮ǰ�������пո�ȷ��ţ������������һ��\n\
-\t\t����д����16 dehexc ,16 dehex 0c\n\
-\t\t��ȷд����16dehex0c ,8 dehex14 ,2dehex1100\n\
-\t\t����÷���֮���һ����Ч�ַ�����0-9������ǰ�����0�����ϵ�c����������\n\
-\t\t���򽫻ᰴ�������ȥ����ʶ�𣬶�����\n\
-\tע�����\n\
-\t\t����������ִ�Сд\n\
-\t\t�ո�հ׷��ſ����������ӣ�ֻҪ���ж������\n\
-\t\t�հ׷���ָ��ASCII�ַ����ո� �س� ���� �Ʊ���\n\
-\t\t����������isSuccess��־λ�����Ϊfalse������ʧ�ܣ�������\n\
-\t\t�����ʹ��getLastErrStr()��ȡ��������\n\
-\t\tʹ��getLastResult()��ȡ�����������������������м������\n\
-\t\t\t���δ�������󣬾�����ȷ���\n\
-\t�ۺ�ʹ�ð�����\n\
+\t\t解析2-16进制数，用法：16 dehex0c\n\
+\t\t【注意】：dehex【之后】紧跟解析数，不能有空格等符号，否则出错\n\
+\t\t【注意】：dehex【之前】可以有空格等符号，和其他运算符一致\n\
+\t\t出错写法：16 dehexc ,16 dehex 0c\n\
+\t\t正确写法：16dehex0c ,8 dehex14 ,2dehex1100\n\
+\t\t如果该符号之后第一个有效字符不是0-9，请在前面加上0，如上的c就是这个情况\n\
+\t\t否则将会按照运算符去处理识别，而出错\n\
+\t注意事项：\n\
+\t\t运算符不区分大小写\n\
+\t\t空格空白符号可以任意添加，只要不中断运算符\n\
+\t\t空白符号指：ASCII字符：空格 回车 换行 制表符\n\
+\t\t计算结果请检查isSuccess标志位，如果为false，计算失败，错误发生\n\
+\t\t你可以使用getLastErrStr()获取错误描述\n\
+\t\t使用getLastResult()获取计算结果，如果发生错误就是中间计算结果\n\
+\t\t\t如果未发生错误，就是正确结果\n\
+\t综合使用案例：\n\
 \t\t7 and 3 + 1 or 2 + 3 xor 0 + (0 not) and 3 + \
 (60radian)sin + (30radian)cos + (30radian)tan + 3!+ 25per + 10neg + 180radian + \
 2 sqrt 4 + 2 log 8 + 1 adds 5 + 1 muls 3 + \
@@ -176,7 +176,7 @@ public:
 3 * 2 * 2 / 4 + 5 * (2 - 4) + 6 / 3 + 12 % 10 + 2 ^ 3+\
 1 recip + 1 epow + 1 nume ln + 2 numpi + 1 numgsec+\
 16 dehex0c + 8 dehex14 - 2 dehex1100\n\
-\t\t������Ϊ��79.460495\n\
+\t\t计算结果为：79.460495\n\
 "};
 		return help; 
 	}
@@ -185,7 +185,7 @@ public:
 		cleanAll();
 
 		m_flags.setSize(0);
-		m_flags.push(AlgoString<char, int>("+"));	//д���ο���3+2-5*4/3
+		m_flags.push(AlgoString<char, int>("+"));	//写法参考：3+2-5*4/3
 		m_flags.push(AlgoString<char, int>("-"));
 		m_flags.push(AlgoString<char, int>("*"));
 		m_flags.push(AlgoString<char, int>("/"));
@@ -194,30 +194,30 @@ public:
 		m_flags.push(AlgoString<char, int>("("));
 		m_flags.push(AlgoString<char, int>(")"));
 
-		m_flags.push(AlgoString<char, int>("sqrt"));	// ��m��n�θ�: n sqrt m //д���ο���2 sqrt 4 + 2 log 8 adds 3 ����ʵ�ʹ�ͳ�����һ����������������
-		m_flags.push(AlgoString<char, int>("log"));    // ����log��aΪ��b�Ķ����� a log b //log(num2)/log(num1)//���׹�ʽ
-		m_flags.push(AlgoString<char, int>("adds"));	//����a�ۼӵ�b: a adds b
-		m_flags.push(AlgoString<char, int>("muls"));	//����a�۳˵�b: a muls b
+		m_flags.push(AlgoString<char, int>("sqrt"));	// 对m开n次根: n sqrt m //写法参考：2 sqrt 4 + 2 log 8 adds 3 ，其实和传统运算符一样，操作数在两边
+		m_flags.push(AlgoString<char, int>("log"));    // 计算log以a为底b的对数： a log b //log(num2)/log(num1)//换底公式
+		m_flags.push(AlgoString<char, int>("adds"));	//计算a累加到b: a adds b
+		m_flags.push(AlgoString<char, int>("muls"));	//计算a累乘到b: a muls b
 
-		m_flags.push(AlgoString<char, int>("and"));	//����������
+		m_flags.push(AlgoString<char, int>("and"));	//二进制运算
 		m_flags.push(AlgoString<char, int>("or"));
 		m_flags.push(AlgoString<char, int>("xor"));
 
-		m_indexOfSingleNumberOperatorBegin = m_flags.size(); //��Ŀ˫Ŀ������ָ��¼
+		m_indexOfSingleNumberOperatorBegin = m_flags.size(); //单目双目运算符分割记录
 
 		m_flags.push(AlgoString<char, int>("not"));
 
-		m_flags.push(AlgoString<char, int>("!"));		//�׳�		//д���ο���2! + (6 neg) abs ����ʵ�ͽ׳�д��һ������������ǰ
-		m_flags.push(AlgoString<char, int>("neg"));	//ȡ����	//����
-		m_flags.push(AlgoString<char, int>("per"));	//ȡ�ٷ�ֵ	//�ٷֺ�
-		m_flags.push(AlgoString<char, int>("abs"));	//ȡ����ֵ
-		m_flags.push(AlgoString<char, int>("radian"));	//ȡ������
-		m_flags.push(AlgoString<char, int>("angle"));		//ȡ�Ƕ���
-		m_flags.push(AlgoString<char, int>("sin"));		//���Ǻ����壬Ĭ��ʹ�û��Ƚ��м��㣬�ر�˵��
+		m_flags.push(AlgoString<char, int>("!"));		//阶乘		//写法参考：2! + (6 neg) abs ，其实和阶乘写法一样，操作数在前
+		m_flags.push(AlgoString<char, int>("neg"));	//取负数	//负号
+		m_flags.push(AlgoString<char, int>("per"));	//取百分值	//百分号
+		m_flags.push(AlgoString<char, int>("abs"));	//取绝对值
+		m_flags.push(AlgoString<char, int>("radian"));	//取弧度制
+		m_flags.push(AlgoString<char, int>("angle"));		//取角度制
+		m_flags.push(AlgoString<char, int>("sin"));		//三角函数族，默认使用弧度进行计算，特别说明
 		m_flags.push(AlgoString<char, int>("cos"));
 		m_flags.push(AlgoString<char, int>("tan"));
 		m_flags.push(AlgoString<char, int>("arcsin"));
-		m_flags.push(AlgoString<char, int>("arcsos"));
+		m_flags.push(AlgoString<char, int>("arccos"));
 		m_flags.push(AlgoString<char, int>("arctan"));
 
 		m_flags.push(AlgoString<char, int>("recip"));
@@ -241,7 +241,7 @@ public:
 			{ 1, 1, 1, 1, 1, 0, 1, -1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },		//  ^
 			{ 1, 1, 1, 1, 1, 1, 1, -1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 },		//  (
 			{ 0, 0, 0, 0, 0, 0, 9, -1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },		//  )
-			//��չ˫Ŀ�����
+			//拓展双目运算符
 			{ 1, 1, 1, 1, 1, 0, 1, -1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },		//  sqrt
 			{ 1, 1, 1, 1, 1, 0, 1, -1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },		//  log
 			{ 1, 1, 1, 1, 1, 0, 1, -1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },		//  adds
@@ -251,7 +251,7 @@ public:
 			{ 1, 1, 1, 1, 1, 0, 1, -1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },		//  or
 			{ 1, 1, 1, 1, 1, 0, 1, -1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },		//  xor
 			{ 1, 1, 1, 1, 1, 0, 1, -1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },		//  not
-			//��Ŀ�����
+			//单目运算符
 			{ 1, 1, 1, 1, 1, 0, 1, -1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },		//  !
 			{ 1, 1, 1, 1, 1, 0, 1, -1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },		//  neg
 			{ 1, 1, 1, 1, 1, 0, 1, -1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },		//  per
@@ -264,7 +264,7 @@ public:
 			{ 1, 1, 1, 1, 1, 0, 1, -1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },		//  arcsin
 			{ 1, 1, 1, 1, 1, 0, 1, -1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },		//  arccos
 			{ 1, 1, 1, 1, 1, 0, 1, -1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },		//  arctan
-			//��չ��Ŀ�����
+			//拓展单目运算符
 			{ 1, 1, 1, 1, 1, 0, 1, -1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },		//  recip
 			{ 1, 1, 1, 1, 1, 0, 1, -1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },		//  epow
 			{ 1, 1, 1, 1, 1, 0, 1, -1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },		//  ln
@@ -289,13 +289,13 @@ public:
 		cleanAll();
 	}
 	/*
-	������������ʽ�����ɽ��м��㣬���ؼ�������
-	��������Ҫ���ܼ����Ƿ�ɹ��ı�־��
-	һ���������󣬷���ֵΪ0���ɹ���־Ϊfalse
-	���������ͨ��getLastErrStr()��ȡ��������
-	���ܹ����У��Ǵ���һ������֮ǰ����ȷ����ģ�
-	�����ͨ��getLastResult()��ȡ���������˷������֮ǰ�����־�ɹ�����ô�������յļ�����
-	base��������ָ������ʹ�õĽ��ƣ�Ĭ��ʮ���ƣ��⽫�����������������ֲ��ֵĽ���
+	给定算术表达式，即可进行计算，返回计算结果，
+	并且你需要接受计算是否成功的标志，
+	一旦发生错误，返回值为0，成功标志为false
+	但是你可以通过getLastErrStr()获取错误描述
+	可能过程中，是存在一定步骤之前的正确结果的，
+	你可以通过getLastResult()获取计算结果，此方法如果之前计算标志成功，那么就是最终的计算结果
+	base参数用于指定运算使用的进制，默认十进制，这将会决定整个计算的数字部分的解析
 	*/
 	double calculate(AlgoString<char, int> formula, bool * isSuccess, int base = 10)
 	{
@@ -308,7 +308,7 @@ public:
 
 		if (AlgoString<char,int>(formula).trim().getLength() == 0)
 		{
-			sprintf(lastErr, "���봮���ȱ��ضϻ���������մ���������\0");
+			sprintf(lastErr, "输入串长度被截断或是无意义空串，请重试\0");
 			*isSuccess = false;
 			return 0;
 		}
@@ -341,7 +341,7 @@ public:
 					}
 					if (isLegalOperator(flg) == false)
 					{
-						sprintf(lastErr, "δʶ����������%s\0", flg.getData());
+						sprintf(lastErr, "未识别的运算符：%s\0", flg.getData());
 						*isSuccess = false;
 						return 0;
 					}
@@ -354,7 +354,7 @@ public:
 						int priority = getPriortyTag(flg, top);
 						if (priority == -1)
 						{
-							sprintf(lastErr, "����ʽ����index:%d,value:%s\0", i, flg.getData());
+							sprintf(lastErr, "表达式错误：index:%d,value:%s\0", i, flg.getData());
 							*isSuccess = false;
 							return 0;
 						}
@@ -366,13 +366,13 @@ public:
 						{
 							if (calculateOnceStack() == false)
 							{
-								sprintf(lastErr, "��ʽ���󣬲�ƥ��Ĳ�����,�����������쳣��index:%d,value:%s\0", i, flg.getData());
+								sprintf(lastErr, "公式错误，不匹配的操作数,操作数个数异常：index:%d,value:%s\0", i, flg.getData());
 								*isSuccess = false;
 								return 0;
 							}
-							//ע�⣬���continue������Ҫ����Ҫ�����Ǵ��������������ڵ�����
-							//���ں�����±��ƶ���ͳһ�ģ�������ﲻ�жϽ���continue
-							//���ᵼ���±������ǰ�ߣ����¼������ų��ִ���
+							//注意，这个continue至关重要，主要作用是处理最里层的括号内的运算
+							//由于后面的下标移动是统一的，如果这里不判断进行continue
+							//将会导致下标持续向前走，导致计算括号出现错误
 							if (flg.equalsIgnoreCase(")"))
 								continue;
 							m_flagStack.push(flg);
@@ -387,68 +387,68 @@ public:
 				i += addCount;	
 			}
 		}
-		//�������ջ��ʣ�������
-		//�ر�ע�⣺��ʱջ�еķ�����Ȼ�������ȼ���ϵ�����ֱ�Ӳ���ȡ��ջ�����㣬��ô����û�����ȼ���Ҳ��ӦΪ����ѭ�����ҵļ����������¼������
-		//�����ģ�2*2-4*1+2 sqrt 4�����ᵼ�¼������̱�Ϊ��((2*2)-((4*1)+(2 sqrt 4)))=-2,��������ȷ�Ľ��2=(((2*2)-(4*1))+(2 sqrt 4))
-		//���ִ����������ģ���ˣ���ȷ���ƺ��������ǣ�
+		//处理最后栈中剩余的数据
+		//特别注意：此时栈中的符号依然存在优先级关系，如果直接不断取出栈顶计算，那么就算没有优先级，也会应为不遵循从左到右的计算规则而导致计算出错
+		//常见的：2*2-4*1+2 sqrt 4，将会导致计算流程变为：((2*2)-((4*1)+(2 sqrt 4)))=-2,而不是正确的结果2=(((2*2)-(4*1))+(2 sqrt 4))
+		//这种错误将是致命的，因此，正确的善后计算过程是：
 		/*
-		��� ����ջ���������ڵ���2�� �Ǿ���Ҫ�Ƚ����ȼ�������������У���ջ��==��ʵ��ջ����Ԫ�أ���ջ��==����ջ����ջ��Ԫ��
-			��� ��ջ�������ȼ� ���� ��ջ�������ȼ�
-				��ô ֱ�ӵ�������ջ�������ֺͷ���ջһ�����Ž��м��㣬����������ջ�����Ų�����ջ�ˣ���Ҫע�⡿
-			����
-				��ô �ȱ������ջ��������ջ��ջ������ȥ�����ĵ�ջ���㣬����������ջ���ٰ���ǰ����ķ��ź�������ջ��
-		����
-			ֱ�ӵ�ջ���㣬�ó����ս��
+		如果 符号栈内数量大于等于2， 那就需要比较优先级，下面的描述中：真栈顶==真实的栈顶部元素，次栈顶==除了栈顶的栈顶元素
+			如果 真栈顶的优先级 大于 次栈顶的优先级
+				那么 直接弹出数字栈两个数字和符号栈一个符号进行计算，将计算结果入栈【符号不在入栈了，需要注意】
+			否则
+				那么 先保存符号栈顶和数字栈的栈顶，在去正常的弹栈计算，将计算结果入栈【再把先前保存的符号和数字入栈】
+		否则
+			直接弹栈计算，得出最终结果
 				
 		*/
 		while (m_flagStack.size() > 0)
 		{
 			bool isCalSec = false;
-			if (m_flagStack.size() >= 2)//�������ջ�����������ϵ���������Ǿ���Ҫ���ȼ��Ƚ�
+			if (m_flagStack.size() >= 2)//如果符号栈还有两个以上的运算符，那就需要优先级比较
 			{
-				//�ȵ�ջ�Ƚ����ȼ�
+				//先弹栈比较优先级
 				AlgoString<char, int> endTop = m_flagStack.pop();
 				AlgoString<char, int> preTop = m_flagStack.pop();
 				int priority = getPriortyTag(endTop, preTop);
 				if (priority == 1)
 				{
-					//��ջ�������ȼ��ߣ���ָ�ջ
+					//真栈顶的优先级高，则恢复栈
 					m_flagStack.push(preTop);
 					m_flagStack.push(endTop);
 
-					//��ջ����,��ջ���
+					//弹栈计算,入栈结果
 					isCalSec = calculateOnceStack();
 				}
 				else if (priority == 0)
 				{
-					//��ջ�������ȼ��ͣ��򱣴���ջ��ջ������Ϊ������ʵ�ֵ�ʱ���ǵ�ջ�Ƚϵ����ȼ��������Ҫ�ظ���ջ����Ϊ��ʱջ��
+					//真栈顶的优先级低，则保存两栈的栈顶，因为我这里实现的时候，是弹栈比较的优先级，因此需要回复次栈顶成为临时栈顶
 					double topNum = m_numberStack.pop();
 					m_flagStack.push(preTop);
 
-					//��ջ���㣬��ջ���
+					//弹栈计算，入栈结果
 					isCalSec = calculateOnceStack();
 
-					//�ָ����������ջ��
+					//恢复保存的两真栈顶
 					m_numberStack.push(topNum);
 					m_flagStack.push(endTop);
 				}
 				else
 				{
-					//���������β��ʱ�򣬷���ջ�������������ˣ�����������Ǵ��ڣ��Ǿ��ǳ�����
-					sprintf(lastErr, "��ջ�쳣���߷���ջ�쳣\0");
+					//由于最后收尾的时候，符号栈不存在左括号了，但是如果还是存在，那就是出错了
+					sprintf(lastErr, "堆栈异常或者符号栈异常\0");
 					*isSuccess = false;
 					return 0;
 				}
 			}
 			else
 			{
-				//�������ջֻ��һ�������ˣ�û��������ֱ�Ӽ��㣬�õ����ս��
+				//如果符号栈只有一个符号了，没得商量，直接计算，得到最终结果
 				isCalSec = calculateOnceStack();
 			}
 
 			if (isCalSec == false)
 			{
-				sprintf(lastErr, "��ʽ���󣬲�ƥ��Ĳ�����,�����������쳣��index:end,value:end\0");
+				sprintf(lastErr, "公式错误，不匹配的操作数,操作数个数异常：index:end,value:end\0");
 				*isSuccess = false;
 				return 0;
 			}
@@ -456,13 +456,13 @@ public:
 
 		if (m_numberStack.size() ==0)
 		{
-			sprintf(lastErr, "����ʶ��Ĺ�ʽ����������\0");
+			sprintf(lastErr, "不能识别的公式，无运算结果\0");
 			*isSuccess = false;
 			return 0;
 		}
 		if (m_numberStack.size() !=1)
 		{
-			sprintf(lastErr, "��ʽ���ڴ����������������Ȼ��������������\0");
+			sprintf(lastErr, "公式存在错误或不完整，但是依然满足计算需求规则\0");
 			*isSuccess = false;
 			return 0;
 		}
@@ -580,7 +580,7 @@ private:
 	bool calculateOnceStack()
 	{
 		AlgoString<char, int> top = m_flagStack.top();
-		if (isSingleNumberOperator(top))//��Ŀ������ţ�ֻȡ��һ�����������㼴��
+		if (isSingleNumberOperator(top))//单目运算符号，只取出一个操作数计算即可
 		{
 			if (m_numberStack.size() < 1)
 			{
@@ -649,7 +649,7 @@ private:
 		{
 			return pow(num1, num2);
 		}
-		else if (ope.equalsIgnoreCase("sqrt"))//n�θ���m==m��1/n����
+		else if (ope.equalsIgnoreCase("sqrt"))//n次根号m==m的1/n次幂
 		{
 			return pow(num2, 1.0 / num1);
 		}
