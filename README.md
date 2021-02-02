@@ -1,5 +1,7 @@
 # FormulaCalculator
 a calculator of base on string formula by double stack,using c++ implements
+# News
+the ui version was com,it location on /ui-version,include qt exe for window and JNI apk for android
 # introduce
 https://blog.csdn.net/Ugex_Savelar/article/details/107581618
 # running preview
